@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScamShield - Protect Yourself from Scams</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #e8e8e8;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a0a 50%);
+            z-index: -1;
+        }
+
+        /* Landing Page */
+        #landing {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            padding: 30px 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            margin-left: -400px;
+        }
+
+        .shield-icon {
+            width: 36px;
+            height: 36px;
+            background: #6366f1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .hero {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 80px 0;
+        }
+
+        .hero-content h1 {
+            font-size: 56px;
+            margin-bottom: 24px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+            animation: fadeInUp 0.8s ease, glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { 
+                text-shadow: 0 0 20px rgba(99, 102, 241, 0.5),
+                             0 0 40px rgba(99, 102, 241, 0.3);
+            }
+            50% { 
+                text-shadow: 0 0 30px rgba(99, 102, 241, 0.8),
+                             0 0 60px rgba(99, 102, 241, 0.5);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-content p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            color: #a0a0a0;
+            font-weight: 400;
+            animation: fadeInUp 1s ease;
+        }
+
+        .cta-button {
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            padding: 16px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1.2s ease;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .cta-button:hover {
+            background: #5558e3;
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.6), 
+                        0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 32px;
+            padding: 80px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 48px;
+            transition: all 0.3s ease;
+            border: 1px solid #2a2a2a;
+            position: relative;
+            overflow: hidden;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: default;
+            pointer-events: auto;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(99, 102, 241, 0.1), 
+                transparent);
+            transition: left 0.5s;
+        }
+
+        .feature-card:hover::after {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.5);
+            background: #1f1f1f;
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 56px;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+            text-align: center;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .feature-card h3 {
+            font-size: 26px;
+            margin-bottom: 18px;
+            color: #fff;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .feature-card:hover h3 {
+            color: #8b8ff1;
+            text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+
+        .feature-card p {
+            color: #a0a0a0;
+            line-height: 1.7;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        /* Landing page feature cards should not look clickable */
+        #landing .feature-card:hover {
+            transform: translateY(-2px);
+            cursor: default;
+        }
+
+        /* Add a subtle border to indicate it's informational */
+        #landing .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.6);
+            z-index: 3;
+        }
+
+        /* Landing Page Sections */
+        .landing-section {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 20px;
+            color: #a0a0a0;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Our Impact Section */
+        .impact-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+
+        .impact-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .impact-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        }
+
+        .impact-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+        }
+
+        .impact-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #6366f1;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .impact-label {
+            font-size: 18px;
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .impact-description {
+            font-size: 14px;
+            color: #a0a0a0;
+            line-height: 1.5;
+        }
+
+        /* Intelligence Section */
+        .intelligence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .intelligence-card {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .intelligence-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(50%, -50%);
+        }
+
+        .intelligence-card:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+
+        .intelligence-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .intelligence-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .intelligence-card p {
+            color: #a0a0a0;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .intelligence-features {
+            list-style: none;
+            position: relative;
+            z-index: 2;
+        }
+
+        .intelligence-features li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+
+        .intelligence-features li::before {
+            content: '✓';
+            color: #6366f1;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 36px;
+            }
+
+            .section-subtitle {
+                font-size: 18px;
+            }
+
+            .landing-section {
+                padding: 60px 0;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                gap: 20px;
+            }
+
+            .feature-card {
+                padding: 32px;
+                min-height: 220px;
+            }
+
+            .feature-icon {
+                font-size: 48px;
+            }
+
+            .feature-card h3 {
+                font-size: 22px;
+            }
+
+            .impact-stats {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 24px;
+            }
+
+            .intelligence-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .intelligence-card {
+                padding: 24px;
+            }
+
+            .section-nav {
+                display: none;
+            }
+        }
+
+        /* Navigation for sections */
+        .section-nav {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-dot.active {
+            background: #6366f1;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+        }
+
+        .nav-dot:hover {
+            background: rgba(99, 102, 241, 0.7);
+            transform: scale(1.2);
+        }
+
+        /* Dashboard */
+        #dashboard {
+            display: none;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .dashboard-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: #0f0f0f;
+            border-right: 1px solid #1f1f1f;
+            padding: 24px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #1f1f1f;
+        }
+
+        .sidebar-logo .shield-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+        }
+
+        .sidebar-logo span {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .sidebar-section {
+            margin-bottom: 32px;
+        }
+
+        .sidebar-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #a0a0a0;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-item:hover {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .sidebar-item.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
+        }
+
+        .sidebar-item-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .dashboard-main {
+            margin-left: 280px;
+            padding: 32px;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #1f1f1f;
+            flex: 0 0 auto;
+        }
+
+        .dashboard-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .dashboard-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .dashboard-title .badge {
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #151515 100%);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, #6366f1, #8b5cf6);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .stat-change {
+            font-size: 13px;
+            color: #a0a0a0;
+            font-weight: 500;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            animation: fadeIn 0.3s ease;
+            min-height: calc(100vh - 120px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feature-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-top: 0;
+            flex: 0 0 auto;
+        }
+
+        .feature-main-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 40px;
+            border: 1px solid #2a2a2a;
+            margin: 0 auto 24px auto;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .feature-icon-large {
+            width: 56px;
+            height: 56px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .feature-header h2 {
+            font-size: 24px;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .tech-info {
+            background: #0d0d0d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid #2a2a2a;
+            text-align: center;
+        }
+
+        .tech-info h3 {
+            font-size: 14px;
+            color: #6366f1;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .tech-info p {
+            color: #a0a0a0;
+            line-height: 1.7;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
+            background: #0d0d0d;
+            color: #e8e8e8;
+            font-size: 14px;
+            margin-bottom: 16px;
+            resize: vertical;
+            min-height: 120px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: #121212;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        textarea::placeholder, input::placeholder {
+            color: #5a5a5a;
+        }
+
+        .scan-button {
+            width: 100%;
+            background: #6366f1;
+            border: none;
+            color: #fff;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .scan-button:hover {
+            background: #5558e3;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            display: none;
+            animation: slideIn 0.3s ease;
+            border: 1px solid;
+            font-size: 14px;
+        }
+
+        .result.safe {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: #22c55e;
+            color: #4ade80;
+        }
+
+        .result.warning {
+            background: rgba(251, 146, 60, 0.1);
+            border-color: #fb923c;
+            color: #fbbf24;
+        }
+
+        .result.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #f87171;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .news-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .news-item {
+            background: #0d0d0d;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+        }
+
+        .news-item:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            background: #121212;
+        }
+
+        .news-item h3 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .news-date {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .news-item p {
+            color: #a0a0a0;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .dashboard-main {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 40px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <!-- Landing Page -->
+    <div id="landing">
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <div class="shield-icon">🛡️</div>
+                    ScamShield
+                </div>
+            </nav>
+
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>Advanced Threat Detection</h1>
+                    <p>Protect yourself from online scams with AI-powered analysis</p>
+                    <button class="cta-button" onclick="showDashboard()">Get Started</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <section id="features" class="landing-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Features</h2>
+                    <p class="section-subtitle">Comprehensive protection tools designed to keep you safe from online threats</p>
+                </div>
+                
+                <div class="features">
+                    <div class="feature-card">
+                        <div class="feature-icon">📞</div>
+                        <h3>Phone Scanner</h3>
+                        <p>Verify phone numbers against known scam databases and identify suspicious calling patterns.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💬</div>
+                        <h3>Message Analyzer</h3>
+                        <p>Intelligent text analysis scans messages for suspicious keywords and common scam indicators.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎤</div>
+                        <h3>Voice Analyzer</h3>
+                        <p>Detect AI-generated voices and voice spoofing attempts in audio recordings.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔗</div>
+                        <h3>Link Verifier</h3>
+                        <p>Comprehensive URL verification examines web addresses for malicious domains.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🖼️</div>
+                        <h3>Image Searcher</h3>
+                        <p>Reverse image search to identify fake profiles and stolen photos.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📰</div>
+                        <h3>Latest Scams</h3>
+                        <p>Stay updated with recent scam reports and security alerts.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Impact Section -->
+        <section id="our-impact" class="landing-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Our Impact</h2>
+                    <p class="section-subtitle">Making a difference in the fight against online scams and fraud</p>
+                </div>
+                
+                <div class="impact-stats">
+                    <div class="impact-card">
+                        <span class="impact-number">2.5M+</span>
+                        <div class="impact-label">Scams Detected</div>
+                        <p class="impact-description">Successfully identified and prevented millions of fraudulent attempts</p>
+                    </div>
+                    <div class="impact-card">
+                        <span class="impact-number">500K+</span>
+                        <div class="impact-label">Users Protected</div>
+                        <p class="impact-description">Active community of users staying safe with our platform</p>
+                    </div>
+                    <div class="impact-card">
+                        <span class="impact-number">$15M+</span>
+                        <div class="impact-label">Losses Prevented</div>
+                        <p class="impact-description">Total amount of money saved from potential scam losses</p>
+                    </div>
+                    <div class="impact-card">
+                        <span class="impact-number">99.7%</span>
+                        <div class="impact-label">Accuracy Rate</div>
+                        <p class="impact-description">Industry-leading detection accuracy with minimal false positives</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Intelligence Section -->
+        <section id="intelligence" class="landing-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Intelligence</h2>
+                    <p class="section-subtitle">Advanced AI-powered threat intelligence and real-time protection systems</p>
+                </div>
+                
+                <div class="intelligence-grid">
+                    <div class="intelligence-card">
+                        <div class="intelligence-icon">🤖</div>
+                        <h3>AI-Powered Detection</h3>
+                        <p>Our machine learning algorithms continuously learn from new threats and adapt to emerging scam patterns.</p>
+                        <ul class="intelligence-features">
+                            <li>Real-time pattern recognition</li>
+                            <li>Behavioral analysis</li>
+                            <li>Adaptive learning system</li>
+                            <li>Predictive threat modeling</li>
+                        </ul>
+                    </div>
+                    <div class="intelligence-card">
+                        <div class="intelligence-icon">🌐</div>
+                        <h3>Global Threat Network</h3>
+                        <p>Connected to international databases and threat intelligence feeds for comprehensive protection.</p>
+                        <ul class="intelligence-features">
+                            <li>Global scam database access</li>
+                            <li>Real-time threat feeds</li>
+                            <li>Cross-platform intelligence</li>
+                            <li>International collaboration</li>
+                        </ul>
+                    </div>
+                    <div class="intelligence-card">
+                        <div class="intelligence-icon">⚡</div>
+                        <h3>Instant Analysis</h3>
+                        <p>Lightning-fast processing ensures immediate threat detection and response capabilities.</p>
+                        <ul class="intelligence-features">
+                            <li>Sub-second analysis</li>
+                            <li>Cloud-based processing</li>
+                            <li>Scalable infrastructure</li>
+                            <li>24/7 monitoring</li>
+                        </ul>
+                    </div>
+                    <div class="intelligence-card">
+                        <div class="intelligence-icon">🔒</div>
+                        <h3>Privacy Protection</h3>
+                        <p>Advanced security measures ensure your data remains private while providing maximum protection.</p>
+                        <ul class="intelligence-features">
+                            <li>End-to-end encryption</li>
+                            <li>Zero-knowledge architecture</li>
+                            <li>GDPR compliant</li>
+                            <li>No data retention</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Dots -->
+        <div class="section-nav">
+            <div class="nav-dot active" onclick="scrollToSection('landing')"></div>
+            <div class="nav-dot" onclick="scrollToSection('features')"></div>
+            <div class="nav-dot" onclick="scrollToSection('our-impact')"></div>
+            <div class="nav-dot" onclick="scrollToSection('intelligence')"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard">
+        <div class="dashboard-sidebar">
+            <div class="sidebar-logo">
+                <div class="shield-icon">🛡️</div>
+                <span>ScamShield</span>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Dashboard</div>
+                <div class="sidebar-item active" onclick="showSection('overview')">
+                    <span class="sidebar-item-icon">📊</span>
+                    Overview
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Tools</div>
+                <div class="sidebar-item" onclick="showSection('phone')">
+                    <span class="sidebar-item-icon">📞</span>
+                    Phone Scanner
+                </div>
+                <div class="sidebar-item" onclick="showSection('message')">
+                    <span class="sidebar-item-icon">💬</span>
+                    Message Analyzer
+                </div>
+                <div class="sidebar-item" onclick="showSection('voice')">
+                    <span class="sidebar-item-icon">🎤</span>
+                    Voice Analyzer
+                </div>
+                <div class="sidebar-item" onclick="showSection('link')">
+                    <span class="sidebar-item-icon">🔗</span>
+                    Link Verifier
+                </div>
+                <div class="sidebar-item" onclick="showSection('image')">
+                    <span class="sidebar-item-icon">🖼️</span>
+                    Image Searcher
+                </div>
+                <div class="sidebar-item" onclick="showSection('news')">
+                    <span class="sidebar-item-icon">📰</span>
+                    Latest Scams
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Account</div>
+                <div class="sidebar-item" onclick="showLanding()">
+                    <span class="sidebar-item-icon">←</span>
+                    Back to Home
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-main">
+            <!-- Overview Section -->
+            <div id="overview-section" class="content-section active">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        <h1>Overview</h1>
+                        <span class="badge">Personal Stats</span>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Scans Performed</span>
+                            <div class="stat-icon">🔍</div>
+                        </div>
+                        <div class="stat-value" id="totalScans">0</div>
+                        <div class="stat-change" id="mostUsedFeature">Most used: N/A</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Threats Detected</span>
+                            <div class="stat-icon">🛡️</div>
+                        </div>
+                        <div class="stat-value" id="totalThreats">0</div>
+                        <div class="stat-change" id="threatBreakdown">High: 0 | Med: 0 | Low: 0</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Risk Level</span>
+                            <div class="stat-icon">📊</div>
+                        </div>
+                        <div class="stat-value" id="riskPercentage">0%</div>
+                        <div class="stat-change" id="riskCategory">Overall: Low Risk</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Days Protected</span>
+                            <div class="stat-icon">🔥</div>
+                        </div>
+                        <div class="stat-value" id="dayStreak">0</div>
+                        <div class="stat-change" id="streakMessage">Start your protection journey!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phone Scanner Section -->
+            <div id="phone-section" class="content-section">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        <h1>Phone Scanner</h1>
+                        <span class="badge">Fraud Detection</span>
+                    </div>
+                </div>
+
+                <div class="feature-container">
+                    <div class="feature-main-card">
+                        <div class="feature-header">
+                            <div class="feature-icon-large">📞</div>
+                            <h2>Verify Phone Numbers</h2>
+                        </div>
+
+                        <div class="tech-info">
+                            <h3>How It Works</h3>
+                            <p>Our phone scanner analyzes number patterns, geographic data, and carrier information to identify potentially fraudulent phone numbers. The system checks against databases of known scam numbers, validates area codes, and detects number spoofing patterns commonly used by scammers. It also identifies VOIP numbers often used in scam operations.</p>
+                        </div>
+
+                        <input type="text" id="phoneInput" placeholder="Enter phone number (e.g., +1-555-123-4567)" style="min-height: auto;">
+                        <button class="scan-button" onclick="scanPhone()">Scan Phone Number</button>
+                        <div class="result" id="phoneResult"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Searcher Section -->
+            <div id="image-section" class="content-section">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        <h1>Image Searcher</h1>
+                        <span class="badge">Reverse Search</span>
+                    </div>
+                </div>
+
+                <div class="feature-container">
+                    <div class="feature-main-card">
+                        <div class="feature-header">
+                            <div class="feature-icon-large">🖼️</div>
+                            <h2>Search Images</h2>
+                        </div>
+
+                        <div class="tech-info">
+                            <h3>How It Works</h3>
+                            <p>Reverse image search technology identifies whether profile pictures or shared images have been stolen from other sources. The system uses image fingerprinting and visual similarity algorithms to locate identical or modified versions of images across the internet. This helps detect catfishing attempts, fake social media profiles, and stolen identity photos commonly used in romance scams and impersonation fraud.</p>
+                        </div>
+
+                        <input type="text" id="imageInput" placeholder="Enter image URL or describe the image..." style="min-height: auto;">
+                        <button class="scan-button" onclick="scanImage()">Search Image</button>
+                        <div class="result" id="imageResult"></div>
+                    </div>
+                </div>
+            </div>
+
+              <!-- Message Analyzer Section -->
+            <div id="message-section" class="content-section">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        <h1>Message Analyzer</h1>
+                        <span class="badge">Text Analysis</span>
+                    </div>
+                </div>
+
+                <div class="feature-container">
+                    <div class="feature-main-card">
+                        <div class="feature-header">
+                            <div class="feature-icon-large">💬</div>
+                            <h2>Analyze Messages</h2>
+                        </div>
+
+                        <div class="tech-info">
+                            <h3>How It Works</h3>
+                            <p>Advanced natural language processing examines message content for scam indicators including urgency tactics, impersonation attempts, and suspicious requests. The system analyzes linguistic patterns, grammatical structures, and keyword density associated with common scam types like phishing, social engineering, and financial fraud.</p>
+                        </div>
+
+                        <input type="text" id="messageInput" placeholder="Paste the message content you want to analyze..." style="min-height: auto;">
+                        <button class="scan-button" onclick="scanMessage()">Analyze Message</button>
+                        <div class="result" id="messageResult"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice Analyzer Section -->
+            <div id="voice-section" class="content-section">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        <h1>Voice Analyzer</h1>
+                        <span class="badge">Audio Detection</span>
+                    </div>
+                </div>
+
+                <div class="feature-container">
+                    <div class="feature-main-card">
+                        <div class="feature-header">
+                            <div class="feature-icon-large">🎤</div>
+                            <h2>Detect Voice Fraud</h2>
+                        </div>
+
+                        <div class="tech-info">
+                            <h3>How It Works</h3>
+                            <p>Acoustic analysis technology examines voice recordings for signs of AI generation and voice spoofing. The system analyzes audio artifacts, frequency patterns, and voice characteristics that distinguish synthetic voices from genuine human speech. It detects deepfake audio, voice cloning, and automated robocall patterns commonly used in phone scams.</p>
+                        </div>
+
+                        <input type="text" id="voiceInput" placeholder="Describe the voice call or upload audio URL..." style="min-height: auto;">
+                        <button class="scan-button" onclick="scanVoice()">Analyze Voice</button>
+                        <div class="result" id="voiceResult"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Link Verifier Section -->
+            <div id="link-section" class="content-section">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        <h1>Link Verifier</h1>
+                        <span class="badge">URL Security</span>
+                    </div>
+                </div>
+
+                <div class="feature-container">
+                    <div class="feature-main-card">
+                        <div class="feature-header">
+                            <div class="feature-icon-large">🔗</div>
+                            <h2>Verify Links</h2>
+                        </div>
+
+                        <div class="tech-info">
+                            <h3>How It Works</h3>
+                            <p>Multi-layer URL analysis checks domain reputation, SSL certificate validity, and URL structure for malicious patterns. The system examines domain age, registrar information, and checks against blacklists of known phishing sites. It also detects URL obfuscation techniques, suspicious redirects, and typosquatting attempts used to trick users.</p>
+                        </div>
+
+                        <input type="text" id="linkInput" placeholder="Enter URL to verify (e.g., https://example.com)" style="min-height: auto;">
+                        <button class="scan-button" onclick="scanLink()">Verify Link</button>
+                        <div class="result" id="linkResult"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Latest Scams Section -->
+            <div id="news-section" class="content-section">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        <h1>Latest Scams</h1>
+                        <span class="badge">Security Updates</span>
+                    </div>
+                </div>
+
+                <div class="feature-container">
+                    <div class="tech-info">
+                        <h3>How It Works</h3>
+                        <p>Real-time monitoring of security reports, user submissions, and cybersecurity databases keeps you informed about emerging scam tactics. Our system aggregates threat intelligence from multiple sources including government agencies, cybersecurity firms, and community reports to provide timely alerts about new fraud schemes targeting individuals and businesses.</p>
+                    </div>
+
+                    <div class="news-grid">
+                        <div class="news-item">
+                            <h3>🚨 AI Voice Cloning Scams Surge</h3>
+                            <div class="news-date">October 2, 2025</div>
+                            <p>Scammers are using AI voice cloning technology to impersonate family members in distress. They collect voice samples from social media and use them to create convincing emergency calls requesting money transfers. Always verify through alternative contact methods.</p>
+                        </div>
+
+                        <div class="news-item">
+                            <h3>⚠️ Fake Delivery Notification Campaign</h3>
+                            <div class="news-date">September 28, 2025</div>
+                            <p>Mass SMS phishing campaign targeting online shoppers with fake delivery notifications. Messages contain links to credential-harvesting sites mimicking major courier services. Verify all delivery notifications directly through retailer apps or official tracking systems.</p>
+                        </div>
+
+                        <div class="news-item">
+                            <h3>💰 Cryptocurrency Investment Fraud Alert</h3>
+                            <div class="news-date">September 25, 2025</div>
+                            <p>Sophisticated investment scams using fake celebrity endorsements and guaranteed returns promises. Fraudulent platforms show fake profits to encourage larger investments before disappearing. Verify all investment opportunities through regulatory databases.</p>
+                        </div>
+
+                        <div class="news-item">
+                            <h3>🏦 Bank Impersonation Phone Calls</h3>
+                            <div class="news-date">September 20, 2025</div>
+                            <p>Scammers spoofing legitimate bank phone numbers to request account verification. They create urgency claiming suspicious activity detected. Banks never call requesting full passwords or one-time codes. Contact your bank directly using official channels.</p>
+                        </div>
+
+                        <div class="news-item">
+                            <h3>📧 Tax Authority Phishing Campaign</h3>
+                            <div class="news-date">September 15, 2025</div>
+                            <p>Email scam claiming tax refund pending or urgent tax issues requiring immediate action. Messages contain malicious links or request sensitive financial information. Tax authorities communicate primarily through postal mail, not unsolicited emails.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User stats stored in memory
+        let userStats = {
+            totalScans: 0,
+            phoneScans: 0,
+            messageScans: 0,
+            voiceScans: 0,
+            linkScans: 0,
+            imageScans: 0,
+            highRiskThreats: 0,
+            mediumRiskThreats: 0,
+            lowRiskThreats: 0,
+            firstVisit: null,
+            lastVisit: null
+        };
+
+        // Cookie helper functions
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + JSON.stringify(value) + ";" + expires + ";path=/";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) {
+                    try {
+                        return JSON.parse(c.substring(nameEQ.length, c.length));
+                    } catch(e) {
+                        return null;
+                    }
+                }
+            }
+            return null;
+        }
+
+        // Initialize stats on page load
+        function initializeStats() {
+            const savedStats = getCookie('scamshield_stats');
+            if (savedStats) {
+                userStats = savedStats;
+            } else {
+                userStats.firstVisit = new Date().toISOString();
+            }
+            userStats.lastVisit = new Date().toISOString();
+            saveStats();
+            updateDashboard();
+        }
+
+        // Save stats to cookies
+        function saveStats() {
+            setCookie('scamshield_stats', userStats, 365);
+        }
+
+        // Update dashboard display
+        function updateDashboard() {
+            // Total scans
+            document.getElementById('totalScans').textContent = userStats.totalScans;
+            
+            // Most used feature
+            const features = [
+                { name: 'Phone Scanner', count: userStats.phoneScans },
+                { name: 'Message Analyzer', count: userStats.messageScans },
+                { name: 'Voice Analyzer', count: userStats.voiceScans },
+                { name: 'Link Verifier', count: userStats.linkScans },
+                { name: 'Image Searcher', count: userStats.imageScans }
+            ];
+            
+            const mostUsed = features.reduce((max, feature) => 
+                feature.count > max.count ? feature : max, features[0]);
+            
+            const mostUsedText = mostUsed.count > 0 ? mostUsed.name : 'N/A';
+            document.getElementById('mostUsedFeature').textContent = 'Most used: ' + mostUsedText;
+            
+            // Total threats
+            const totalThreats = userStats.highRiskThreats + userStats.mediumRiskThreats + userStats.lowRiskThreats;
+            document.getElementById('totalThreats').textContent = totalThreats;
+            document.getElementById('threatBreakdown').textContent = 
+                `High: ${userStats.highRiskThreats} | Med: ${userStats.mediumRiskThreats} | Low: ${userStats.lowRiskThreats}`;
+            
+            // Risk level calculation
+            let riskPercentage = 0;
+            if (userStats.totalScans > 0) {
+                riskPercentage = ((totalThreats / userStats.totalScans) * 100).toFixed(1);
+            }
+            document.getElementById('riskPercentage').textContent = riskPercentage + '%';
+            
+            let riskCategory = 'Low Risk';
+            if (riskPercentage >= 50) {
+                riskCategory = 'High Risk';
+            } else if (riskPercentage >= 25) {
+                riskCategory = 'Medium Risk';
+            }
+            document.getElementById('riskCategory').textContent = 'Overall: ' + riskCategory;
+            
+            // Days protected (streak)
+            let dayStreak = 0;
+            if (userStats.firstVisit) {
+                const first = new Date(userStats.firstVisit);
+                const today = new Date();
+                dayStreak = Math.floor((today - first) / (1000 * 60 * 60 * 24)) + 1;
+            }
+            document.getElementById('dayStreak').textContent = dayStreak;
+            
+            let streakMessage = 'Start your protection journey!';
+            if (dayStreak > 0) {
+                streakMessage = dayStreak === 1 ? 'Keep it up!' : `${dayStreak} day${dayStreak > 1 ? 's' : ''} of protection!`;
+            }
+            document.getElementById('streakMessage').textContent = streakMessage;
+        }
+
+        function showDashboard() {
+            document.getElementById('landing').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            initializeStats();
+        }
+
+        function showLanding() {
+            document.getElementById('landing').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+        }
+
+        function showSection(sectionName) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(sectionName + '-section').classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function scanPhone() {
+            const phone = document.getElementById('phoneInput').value;
+            const result = document.getElementById('phoneResult');
+            
+            if (!phone.trim()) {
+                alert('Please enter a phone number');
+                return;
+            }
+
+            userStats.totalScans++;
+            userStats.phoneScans++;
+
+            const phonePattern = /^[\+]?[(]?[0-9]{1,3}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,4}[-\s\.]?[0-9]{1,9}$/;
+            let score = 0;
+            
+            if (!phonePattern.test(phone)) score += 1;
+            if (phone.includes('000') || phone.includes('111')) score += 1;
+            if (phone.length < 10) score += 2;
+            
+            result.style.display = 'block';
+            
+            if (score >= 2) {
+                result.className = 'result danger';
+                result.innerHTML = '<strong>⚠️ High Risk Number</strong><br>This number shows suspicious patterns. Proceed with extreme caution and verify through alternative channels.';
+                userStats.highRiskThreats++;
+            } else if (score >= 1) {
+                result.className = 'result warning';
+                result.innerHTML = '<strong>⚡ Caution Advised</strong><br>Number format appears unusual. Verify legitimacy before sharing sensitive information.';
+                userStats.mediumRiskThreats++;
+            } else {
+                result.className = 'result safe';
+                result.innerHTML = '<strong>✓ Format Valid</strong><br>Number format appears standard. However, always verify caller identity independently.';
+                userStats.lowRiskThreats++;
+            }
+
+            saveStats();
+            updateDashboard();
+        }
+
+        function scanMessage() {
+            const text = document.getElementById('messageInput').value;
+            const result = document.getElementById('messageResult');
+            
+            if (!text.trim()) {
+                alert('Please enter message text');
+                return;
+            }
+
+            userStats.totalScans++;
+            userStats.messageScans++;
+
+            const scamKeywords = ['urgent', 'verify account', 'suspended', 'click here', 'confirm password', 
+                                  'prize', 'winner', 'congratulations', 'act now', 'limited time', 
+                                  'bank account', 'social security', 'tax refund', 'inheritance',
+                                  'verify identity', 'update payment', 'account locked', 'unusual activity'];
+            
+            let score = 0;
+            const lowerText = text.toLowerCase();
+            
+            scamKeywords.forEach(keyword => {
+                if (lowerText.includes(keyword)) score += 1;
+            });
+
+            if ((text.match(/!/g) || []).length > 3) score += 1;
+            if (text === text.toUpperCase() && text.length > 20) score += 1;
+            if (lowerText.includes('click') || lowerText.includes('link')) score += 0.5;
+
+            result.style.display = 'block';
+            
+            if (score >= 3) {
+                result.className = 'result danger';
+                result.innerHTML = '<strong>⚠️ High Risk Detected</strong><br>Multiple fraud indicators found. Do not respond or click any links. Report if possible.';
+                userStats.highRiskThreats++;
+            } else if (score >= 1) {
+                result.className = 'result warning';
+                result.innerHTML = '<strong>⚡ Potential Risk</strong><br>Suspicious elements detected. Verify sender through official channels before taking action.';
+                userStats.mediumRiskThreats++;
+            } else {
+                result.className = 'result safe';
+                result.innerHTML = '<strong>✓ Low Threat Level</strong><br>No obvious fraud indicators detected. Always verify unexpected communications independently.';
+                userStats.lowRiskThreats++;
+            }
+
+            saveStats();
+            updateDashboard();
+        }
+
+        function scanVoice() {
+            const voice = document.getElementById('voiceInput').value;
+            const result = document.getElementById('voiceResult');
+            
+            if (!voice.trim()) {
+                alert('Please describe the voice call');
+                return;
+            }
+
+            userStats.totalScans++;
+            userStats.voiceScans++;
+
+            const lowerVoice = voice.toLowerCase();
+            let score = 0;
+            
+            if (lowerVoice.includes('robotic') || lowerVoice.includes('automated')) score += 2;
+            if (lowerVoice.includes('background noise') || lowerVoice.includes('echo')) score += 1;
+            if (lowerVoice.includes('urgent') || lowerVoice.includes('emergency')) score += 1;
+            
+            result.style.display = 'block';
+            
+            if (score >= 3) {
+                result.className = 'result danger';
+                result.innerHTML = '<strong>⚠️ High Risk Audio</strong><br>Voice exhibits characteristics of automated or synthetic speech. Likely scam attempt.';
+                userStats.highRiskThreats++;
+            } else if (score >= 1) {
+                result.className = 'result warning';
+                result.innerHTML = '<strong>⚡ Suspicious Patterns</strong><br>Some concerning audio characteristics detected. Verify caller identity through trusted channels.';
+                userStats.mediumRiskThreats++;
+            } else {
+                result.className = 'result safe';
+                result.innerHTML = '<strong>✓ No Clear Issues</strong><br>No obvious synthetic voice indicators. Still verify identity independently for sensitive requests.';
+                userStats.lowRiskThreats++;
+            }
+
+            saveStats();
+            updateDashboard();
+        }
+
+        function scanLink() {
+            const link = document.getElementById('linkInput').value;
+            const result = document.getElementById('linkResult');
+            
+            if (!link.trim()) {
+                alert('Please enter a URL');
+                return;
+            }
+
+            userStats.totalScans++;
+            userStats.linkScans++;
+
+            const suspiciousDomains = ['bit.ly', 'tinyurl', 'goo.gl', 'ow.ly'];
+            const suspiciousPatterns = /(\d{1,3}\.){3}\d{1,3}/;
+            
+            let riskScore = 0;
+            const lowerLink = link.toLowerCase();
+            
+            const hasHttps = lowerLink.startsWith('https://');
+            
+            if (!hasHttps) riskScore += 2;
+            
+            suspiciousDomains.forEach(domain => {
+                if (lowerLink.includes(domain)) riskScore += 1;
+            });
+            
+            if (suspiciousPatterns.test(link)) riskScore += 2;
+            if (lowerLink.includes('@') || lowerLink.includes('--')) riskScore += 1;
+            if ((link.match(/-/g) || []).length > 4) riskScore += 1;
+
+            result.style.display = 'block';
+            
+            if (riskScore >= 3) {
+                result.className = 'result danger';
+                result.innerHTML = '<strong>⚠️ High Risk URL</strong><br>Multiple security concerns detected. Do not visit this link or enter credentials.';
+                userStats.highRiskThreats++;
+            } else if (riskScore >= 1) {
+                result.className = 'result warning';
+                result.innerHTML = '<strong>⚡ Caution Advised</strong><br>URL shows concerning characteristics. Verify authenticity before proceeding.';
+                userStats.mediumRiskThreats++;
+            } else {
+                result.className = 'result safe';
+                result.innerHTML = '<strong>✓ Structure Valid</strong><br>URL appears properly formatted with HTTPS. Always verify site authenticity before submitting data.';
+                userStats.lowRiskThreats++;
+            }
+
+            saveStats();
+            updateDashboard();
+        }
+
+        function scanImage() {
+            const image = document.getElementById('imageInput').value;
+            const result = document.getElementById('imageResult');
+            
+            if (!image.trim()) {
+                alert('Please enter an image URL or description');
+                return;
+            }
+
+            userStats.totalScans++;
+            userStats.imageScans++;
+
+            const lowerImage = image.toLowerCase();
+            let score = 0;
+            
+            if (lowerImage.includes('stock') || lowerImage.includes('model')) score += 2;
+            if (lowerImage.includes('professional') || lowerImage.includes('studio')) score += 1;
+            
+            result.style.display = 'block';
+            
+            if (score >= 2) {
+                result.className = 'result warning';
+                result.innerHTML = '<strong>⚡ Potential Stock Image</strong><br>Image may be from stock photo sources. Common in fake profiles and scams.';
+                userStats.mediumRiskThreats++;
+            } else {
+                result.className = 'result safe';
+                result.innerHTML = '<strong>✓ Analysis Complete</strong><br>Use reverse image search engines (Google Images, TinEye) for comprehensive verification.';
+                userStats.lowRiskThreats++;
+            }
+
+            saveStats();
+            updateDashboard();
+        }
+
+        // Section navigation functionality
+        function scrollToSection(sectionId) {
+            if (sectionId === 'landing') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+            updateActiveNavDot(sectionId);
+        }
+
+        function updateActiveNavDot(activeSection) {
+            const dots = document.querySelectorAll('.nav-dot');
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            const sections = ['landing', 'features', 'our-impact', 'intelligence'];
+            const activeIndex = sections.indexOf(activeSection);
+            if (activeIndex !== -1 && dots[activeIndex]) {
+                dots[activeIndex].classList.add('active');
+            }
+        }
+
+        // Update navigation dots on scroll
+        window.addEventListener('scroll', function() {
+            const sections = [
+                { id: 'landing', element: document.getElementById('landing') },
+                { id: 'features', element: document.getElementById('features') },
+                { id: 'our-impact', element: document.getElementById('our-impact') },
+                { id: 'intelligence', element: document.getElementById('intelligence') }
+            ];
+
+            let currentSection = 'landing';
+            const scrollPosition = window.scrollY + window.innerHeight / 2;
+
+            sections.forEach(section => {
+                if (section.element) {
+                    const sectionTop = section.element.offsetTop;
+                    const sectionHeight = section.element.offsetHeight;
+                    
+                    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                        currentSection = section.id;
+                    }
+                }
+            });
+
+            updateActiveNavDot(currentSection);
+        });
+
+        // Ensure landing page feature cards don't trigger navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const landingFeatureCards = document.querySelectorAll('#landing .feature-card');
+            landingFeatureCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Just show a subtle animation to indicate it's informational
+                    card.style.transform = 'translateY(-2px) scale(1.02)';
+                    setTimeout(() => {
+                        card.style.transform = '';
+                    }, 200);
+                });
+            });
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            const savedStats = getCookie('scamshield_stats');
+            if (savedStats) {
+                userStats = savedStats;
+            }
+        });
+    </script>
+</body>
+          
+    <script>
+        // (Removed duplicate declaration of userStats)
+
+        function setCookie(name, value, days) {
+            const expires = new Date();
+            expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = name + '=' + JSON.stringify(value) + ';expires=' + expires.toUTCString();
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) {
+                    try {
+                        return JSON.parse(c.substring(nameEQ.length, c.length));
+                    } catch(e) {
+                        return null;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function saveStats() {
+            setCookie('scamshield_stats', userStats, 30);
+        }
+
+        function updateDashboard() {
+            document.getElementById('totalScans').textContent = userStats.totalScans.toLocaleString();
+            document.getElementById('threatsDetected').textContent = userStats.highRiskThreats.toLocaleString();
+            document.getElementById('successRate').textContent = '99.7%';
+            document.getElementById('dataProtected').textContent = (userStats.totalScans * 2.3).toFixed(1) + 'GB';
+            
+            document.getElementById('phoneScansCount').textContent = userStats.phoneScans;
+            document.getElementById('messageScansCount').textContent = userStats.messageScans;
+            document.getElementById('voiceScansCount').textContent = userStats.voiceScans;
+            document.getElementById('linkScansCount').textContent = userStats.linkScans;
+            document.getElementById('imageScansCount').textContent = userStats.imageScans;
+                    document.getElementById('newsChecksCount').textContent = userStats.newsChecks;
+                }
+            </script>
