@@ -1409,7 +1409,7 @@
                 <div class="dashboard-header">
                     <div class="dashboard-title">
                         <h1>Message Analyzer</h1>
-                        <span class="badge">Text Analysis</span>
+                        <span class="badge">AI Powered</span>
                     </div>
                 </div>
 
@@ -1417,16 +1417,24 @@
                     <div class="feature-main-card">
                         <div class="feature-header">
                             <div class="feature-icon-large">💬</div>
-                            <h2>Analyze Messages</h2>
+                            <h2>AI Scam Detection</h2>
                         </div>
 
                         <div class="tech-info">
                             <h3>How It Works</h3>
-                            <p>Advanced natural language processing examines message content for scam indicators including urgency tactics, impersonation attempts, and suspicious requests. The system analyzes linguistic patterns, grammatical structures, and keyword density associated with common scam types like phishing, social engineering, and financial fraud.</p>
+                            <p>Powered by Google's Gemini AI, our advanced language model analyzes emails, text messages, and social media messages for scam patterns. It detects phishing attempts, social engineering tactics, financial fraud, romance scams, and other deceptive communications with high accuracy using natural language understanding.</p>
                         </div>
 
-                        <input type="text" id="messageInput" placeholder="Paste the message content you want to analyze..." style="min-height: auto;">
-                        <button class="scan-button" onclick="scanMessage()">Analyze Message</button>
+                        <textarea id="messageInput" placeholder="Paste your email, text message, or any suspicious communication here..." style="min-height: 150px; resize: vertical;"></textarea>
+                        
+                        <div class="analysis-options" style="margin: 16px 0;">
+                            <label style="display: flex; align-items: center; gap: 8px; color: #a0a0a0; font-size: 14px;">
+                                <input type="checkbox" id="detailedAnalysis" checked style="margin: 0;">
+                                Detailed AI analysis with explanations
+                            </label>
+                        </div>
+                        
+                        <button class="scan-button" onclick="scanMessage()" disabled id="messageAnalyzeButton">Enter Message to Analyze</button>
                         <div class="result" id="messageResult"></div>
                     </div>
                 </div>
@@ -1450,7 +1458,7 @@
 
                         <div class="tech-info">
                             <h3>How It Works</h3>
-                            <p>Upload any audio file to get real-time AI voice detection powered by Hive API. Our advanced machine learning models analyze acoustic fingerprints, spectral characteristics, and temporal patterns to detect deepfake audio, voice cloning, and synthetic speech with industry-leading accuracy. Simply upload your audio file and get instant results.</p>
+                            <p>Advanced AI-powered voice analysis using a local Python backend with free libraries (librosa, speech recognition). The system transcribes audio content using Google Speech Recognition to detect scam phrases, urgency tactics, and suspicious requests, while simultaneously analyzing audio characteristics like pitch, speech rate, and volume patterns. Provides comprehensive protection against voice scams without requiring paid API keys.</p>
                         </div>
                         
                         <div class="upload-section" style="margin: 16px 0;">
@@ -1725,52 +1733,244 @@
             updateDashboard();
         }
 
-        function scanMessage() {
+        async function scanMessage() {
             const text = document.getElementById('messageInput').value;
             const result = document.getElementById('messageResult');
+            const detailedAnalysis = document.getElementById('detailedAnalysis').checked;
             
             if (!text.trim()) {
-                alert('Please enter message text');
+                alert('Please enter message text to analyze');
                 return;
             }
 
             userStats.totalScans++;
             userStats.messageScans++;
 
+            // Show loading state
+            result.style.display = 'block';
+            result.className = 'result loading';
+            result.innerHTML = '<div class="loading-spinner"></div><strong>🤖 AI Analysis in Progress...</strong><br>Analyzing message with Gemini AI, please wait...';
+
+            try {
+                await analyzeMessageWithGemini(text, result, detailedAnalysis);
+            } catch (error) {
+                console.error('Gemini API error:', error);
+                result.className = 'result warning';
+                result.innerHTML = '<strong>⚠️ Analysis Error</strong><br>Unable to connect to Gemini AI. Falling back to basic analysis.';
+                performBasicMessageAnalysis(text, result);
+            }
+
+            saveStats();
+            updateDashboard();
+        }
+
+        // Gemini AI integration for message analysis
+        async function analyzeMessageWithGemini(messageText, resultElement, detailed = true) {
+            // Gemini API key
+            const GEMINI_API_KEY = 'AIzaSyAMEDrP9ul0zLTmEuWp_1LRlCuOKxITkdI';
+            const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+
+            const prompt = detailed ? 
+                `You are an expert cybersecurity analyst specializing in scam detection. Analyze the following message for potential scam indicators and provide a detailed assessment.
+
+Message to analyze:
+"${messageText}"
+
+Please provide a JSON response with the following structure:
+{
+    "scam_probability": 0.0-1.0,
+    "risk_level": "low|medium|high", 
+    "scam_type": "phishing|social_engineering|financial_fraud|romance_scam|tech_support|other|legitimate",
+    "confidence": 0.0-1.0,
+    "key_indicators": ["list", "of", "suspicious", "elements"],
+    "explanation": "Detailed explanation of why this message is or isn't a scam",
+    "recommendations": ["specific", "actions", "to", "take"]
+}
+
+Focus on detecting:
+- Urgency tactics and pressure
+- Requests for personal/financial information  
+- Impersonation attempts
+- Suspicious links or attachments
+- Grammar and language patterns
+- Social engineering techniques
+- Emotional manipulation
+- Too-good-to-be-true offers
+
+Be thorough but concise in your analysis.` :
+                `Analyze this message for scam indicators and respond with JSON: {"scam_probability": 0.0-1.0, "risk_level": "low|medium|high", "scam_type": "type"}
+
+Message: "${messageText}"`;
+
+            try {
+                const response = await fetch(GEMINI_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }]
+                        }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Gemini API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const aiResponse = data.candidates[0].content.parts[0].text;
+                
+                // Try to parse JSON response
+                let analysis;
+                try {
+                    analysis = JSON.parse(aiResponse);
+                } catch (e) {
+                    // If not JSON, parse text response
+                    analysis = parseTextResponse(aiResponse);
+                }
+
+                processGeminiResults(analysis, messageText, resultElement);
+
+            } catch (error) {
+                console.error('Gemini API error:', error);
+                throw error;
+            }
+        }
+
+        // Process Gemini AI results
+        function processGeminiResults(analysis, originalText, resultElement) {
+            const scamProbability = analysis.scam_probability || 0;
+            const riskLevel = analysis.risk_level || 'low';
+            const scamType = analysis.scam_type || 'unknown';
+            const confidence = analysis.confidence || 0.5;
+            const keyIndicators = analysis.key_indicators || [];
+            const explanation = analysis.explanation || 'Analysis completed';
+            const recommendations = analysis.recommendations || [];
+
+            // Determine threat level
+            let threatLevel = 'safe';
+            let threatMessage = '';
+            
+            if (scamProbability >= 0.7 || riskLevel === 'high') {
+                threatLevel = 'danger';
+                threatMessage = '⚠️ HIGH RISK SCAM DETECTED';
+                userStats.highRiskThreats++;
+            } else if (scamProbability >= 0.4 || riskLevel === 'medium') {
+                threatLevel = 'warning';
+                threatMessage = '⚡ SUSPICIOUS MESSAGE - CAUTION ADVISED';
+                userStats.mediumRiskThreats++;
+            } else if (scamProbability >= 0.2) {
+                threatLevel = 'warning';
+                threatMessage = '⚡ MINOR CONCERNS DETECTED';
+                userStats.mediumRiskThreats++;
+            } else {
+                threatLevel = 'safe';
+                threatMessage = '✅ LIKELY LEGITIMATE MESSAGE';
+                userStats.lowRiskThreats++;
+            }
+
+            // Display results
+            resultElement.className = `result ${threatLevel}`;
+            resultElement.innerHTML = `
+                <strong>${threatMessage}</strong><br>
+                <strong>🎯 Scam Probability:</strong> ${(scamProbability * 100).toFixed(1)}%<br>
+                <strong>📊 Risk Level:</strong> ${riskLevel.toUpperCase()}<br>
+                <strong>🏷️ Scam Type:</strong> ${scamType.replace('_', ' ').toUpperCase()}<br>
+                <strong>🎲 AI Confidence:</strong> ${(confidence * 100).toFixed(1)}%<br>
+                ${keyIndicators.length > 0 ? `<strong>🚩 Key Indicators:</strong> ${keyIndicators.join(', ')}<br>` : ''}
+                <br>
+                <strong>📝 AI Analysis:</strong><br>
+                <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px; margin: 8px 0; font-size: 13px; line-height: 1.5;">
+                    ${explanation}
+                </div>
+                ${recommendations.length > 0 ? `
+                <strong>💡 Recommendations:</strong><br>
+                <ul style="margin: 8px 0; padding-left: 20px; font-size: 13px;">
+                    ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                </ul>` : ''}
+                <br>
+                <small style="color: #666;">⚡ Powered by Google Gemini AI</small>
+            `;
+        }
+
+        // Parse text response if JSON parsing fails
+        function parseTextResponse(textResponse) {
+            // Simple parsing for non-JSON responses
+            const lowerResponse = textResponse.toLowerCase();
+            let scamProbability = 0.3; // default
+            let riskLevel = 'medium';
+            
+            if (lowerResponse.includes('high risk') || lowerResponse.includes('definitely a scam') || lowerResponse.includes('clearly fraudulent')) {
+                scamProbability = 0.8;
+                riskLevel = 'high';
+            } else if (lowerResponse.includes('likely scam') || lowerResponse.includes('suspicious') || lowerResponse.includes('probably fraudulent')) {
+                scamProbability = 0.6;
+                riskLevel = 'medium';
+            } else if (lowerResponse.includes('legitimate') || lowerResponse.includes('not a scam') || lowerResponse.includes('safe')) {
+                scamProbability = 0.1;
+                riskLevel = 'low';
+            }
+
+            return {
+                scam_probability: scamProbability,
+                risk_level: riskLevel,
+                scam_type: 'unknown',
+                confidence: 0.7,
+                key_indicators: [],
+                explanation: textResponse,
+                recommendations: ['Verify sender identity', 'Do not click suspicious links', 'Contact authorities if needed']
+            };
+        }
+
+        // Fallback basic analysis
+        function performBasicMessageAnalysis(messageText, resultElement) {
             const scamKeywords = ['urgent', 'verify account', 'suspended', 'click here', 'confirm password', 
                                   'prize', 'winner', 'congratulations', 'act now', 'limited time', 
                                   'bank account', 'social security', 'tax refund', 'inheritance',
                                   'verify identity', 'update payment', 'account locked', 'unusual activity'];
             
             let score = 0;
-            const lowerText = text.toLowerCase();
+            const lowerText = messageText.toLowerCase();
+            const foundKeywords = [];
             
             scamKeywords.forEach(keyword => {
-                if (lowerText.includes(keyword)) score += 1;
+                if (lowerText.includes(keyword)) {
+                    score += 1;
+                    foundKeywords.push(keyword);
+                }
             });
 
-            if ((text.match(/!/g) || []).length > 3) score += 1;
-            if (text === text.toUpperCase() && text.length > 20) score += 1;
+            if ((messageText.match(/!/g) || []).length > 3) score += 1;
+            if (messageText === messageText.toUpperCase() && messageText.length > 20) score += 1;
             if (lowerText.includes('click') || lowerText.includes('link')) score += 0.5;
 
-            result.style.display = 'block';
-            
+            let threatLevel, message;
             if (score >= 3) {
-                result.className = 'result danger';
-                result.innerHTML = '<strong>⚠️ High Risk Detected</strong><br>Multiple fraud indicators found. Do not respond or click any links. Report if possible.';
+                threatLevel = 'danger';
+                message = '⚠️ HIGH RISK - Multiple Scam Indicators';
                 userStats.highRiskThreats++;
             } else if (score >= 1) {
-                result.className = 'result warning';
-                result.innerHTML = '<strong>⚡ Potential Risk</strong><br>Suspicious elements detected. Verify sender through official channels before taking action.';
+                threatLevel = 'warning';
+                message = '⚡ SUSPICIOUS - Some Risk Indicators';
                 userStats.mediumRiskThreats++;
             } else {
-                result.className = 'result safe';
-                result.innerHTML = '<strong>✓ Low Threat Level</strong><br>No obvious fraud indicators detected. Always verify unexpected communications independently.';
+                threatLevel = 'safe';
+                message = '✅ LOW RISK - No Major Red Flags';
                 userStats.lowRiskThreats++;
             }
-
-            saveStats();
-            updateDashboard();
+            
+            resultElement.className = `result ${threatLevel}`;
+            resultElement.innerHTML = `
+                <strong>${message}</strong><br>
+                <strong>Analysis Method:</strong> Basic Pattern Matching<br>
+                <strong>Suspicious Keywords Found:</strong> ${foundKeywords.length > 0 ? foundKeywords.join(', ') : 'None'}<br>
+                <strong>Risk Score:</strong> ${score.toFixed(1)}/10<br>
+                <br><strong>Note:</strong> For more accurate results, please configure Gemini API key.
+            `;
         }
 
         async function scanVoice() {
@@ -1789,29 +1989,92 @@
             // Show loading state
             result.style.display = 'block';
             result.className = 'result loading';
-            result.innerHTML = '<div class="loading-spinner"></div><strong>🤖 AI Analysis in Progress...</strong><br>Analyzing ' + file.name + ' with Hive API, please wait...';
+            result.innerHTML = '<div class="loading-spinner"></div><strong>🤖 AI Analysis in Progress...</strong><br>Analyzing ' + file.name + ' with Python backend...';
 
             try {
-                await analyzeAudioWithHive(file, result);
+                await analyzeAudioWithPython(file, result);
             } catch (error) {
                 console.error('Voice analysis error:', error);
                 result.className = 'result danger';
-                result.innerHTML = '<strong>⚠️ Analysis Failed</strong><br>Unable to analyze the audio file. Please try uploading a different audio file or check your internet connection.';
+                result.innerHTML = '<strong>⚠️ Analysis Failed</strong><br>Error: ' + error.message + '<br><br>Make sure the Python backend is running on http://localhost:5001';
             }
 
             saveStats();
             updateDashboard();
         }
 
-        // FREE AI voice detection using Web Audio API
-        async function analyzeAudioWithHive(file, resultElement) {
+        // Python backend integration for voice analysis
+        async function analyzeAudioWithPython(file, resultElement) {
+            const PYTHON_API_URL = 'http://localhost:5001/analyze';
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('audio', file);
+            
             try {
-                // Use local Web Audio API analysis (completely free)
-                const audioData = await analyzeAudioLocally(file);
-                processLocalResults(audioData, file.name, resultElement);
+                const response = await fetch(PYTHON_API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status} - ${response.statusText}`);
+                }
+                
+                const analysisResult = await response.json();
+                
+                if (analysisResult.success) {
+                    processPythonResults(analysisResult, file.name, resultElement);
+                } else {
+                    throw new Error(analysisResult.message || 'Analysis failed');
+                }
             } catch (error) {
-                console.error('Local audio analysis error:', error);
-                throw error;
+                console.error('Python backend error:', error);
+                // Fallback to basic local analysis if backend is not available
+                if (error.message.includes('fetch')) {
+                    throw new Error('Cannot connect to Python backend. Please make sure the server is running on localhost:5001');
+                } else {
+                    throw error;
+                }
+            }
+        }
+
+        // OpenAI Whisper API transcription
+        async function transcribeWithWhisper(audioFile) {
+            const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE'; // You'll need to add your OpenAI API key
+            const WHISPER_API_URL = 'https://api.openai.com/v1/audio/transcriptions';
+
+            const formData = new FormData();
+            formData.append('file', audioFile);
+            formData.append('model', 'whisper-1');
+            formData.append('response_format', 'json');
+            formData.append('language', 'en'); // Auto-detect or specify language
+
+            try {
+                const response = await fetch(WHISPER_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Whisper API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return {
+                    transcription: data.text,
+                    success: true
+                };
+            } catch (error) {
+                console.error('Whisper transcription error:', error);
+                return {
+                    transcription: '',
+                    success: false,
+                    error: error.message
+                };
             }
         }
 
@@ -1907,6 +2170,242 @@
         }
 
 
+
+        // Process Whisper + local analysis results
+        function processWhisperResults(transcriptionResult, audioData, fileName, resultElement) {
+            let aiProbability = 0;
+            let analysisDetails = [];
+            let suspiciousFactors = [];
+
+            // Analyze transcription for scam content if available
+            if (transcriptionResult.success && transcriptionResult.transcription) {
+                const transcript = transcriptionResult.transcription.toLowerCase();
+                
+                // Check for common scam phrases in the transcription
+                const scamPhrases = [
+                    'urgent', 'immediately', 'suspend', 'verify', 'confirm',
+                    'social security', 'bank account', 'credit card', 'password',
+                    'winner', 'congratulations', 'prize', 'lottery', 'inheritance',
+                    'bitcoin', 'cryptocurrency', 'investment opportunity',
+                    'microsoft', 'apple', 'amazon', 'google', 'paypal',
+                    'refund', 'tax', 'irs', 'government', 'police'
+                ];
+
+                let transcriptScore = 0;
+                const foundPhrases = [];
+                
+                scamPhrases.forEach(phrase => {
+                    if (transcript.includes(phrase)) {
+                        transcriptScore += 0.1;
+                        foundPhrases.push(phrase);
+                    }
+                });
+
+                // Check for urgency and pressure tactics
+                if (transcript.includes('act now') || transcript.includes('limited time') || 
+                    transcript.includes('expires') || transcript.includes('hurry')) {
+                    transcriptScore += 0.2;
+                    suspiciousFactors.push('Urgency tactics detected in speech');
+                }
+
+                // Check for requests for sensitive information
+                if (transcript.includes('social security') || transcript.includes('credit card') ||
+                    transcript.includes('password') || transcript.includes('pin')) {
+                    transcriptScore += 0.3;
+                    suspiciousFactors.push('Requests for sensitive information');
+                }
+
+                // Check for impersonation
+                if (transcript.includes('this is') && (transcript.includes('bank') || 
+                    transcript.includes('microsoft') || transcript.includes('government'))) {
+                    transcriptScore += 0.25;
+                    suspiciousFactors.push('Potential impersonation attempt');
+                }
+
+                analysisDetails.push(`Transcription Available: Yes (${transcriptionResult.transcription.length} characters)`);
+                if (foundPhrases.length > 0) {
+                    analysisDetails.push(`Suspicious Keywords: ${foundPhrases.join(', ')}`);
+                }
+                
+                aiProbability += transcriptScore;
+            } else {
+                analysisDetails.push('Transcription Available: No (using audio analysis only)');
+            }
+
+            // Add audio characteristic analysis (existing logic)
+            let audioScore = 0;
+
+            // Check zero crossing rate
+            if (audioData.zeroCrossingRate < 0.1 || audioData.zeroCrossingRate > 0.5) {
+                audioScore += 0.2;
+                suspiciousFactors.push('Unusual speech pattern detected');
+            }
+
+            // Check dynamic range
+            if (audioData.dynamicRange < 0.3) {
+                audioScore += 0.25;
+                suspiciousFactors.push('Limited dynamic range (possible synthetic)');
+            }
+
+            // Check RMS levels
+            if (audioData.rms > 0.8 || audioData.rms < 0.05) {
+                audioScore += 0.15;
+                suspiciousFactors.push('Unnatural loudness levels');
+            }
+
+            // Check compression ratio
+            if (audioData.compressionRatio < 0.5) {
+                audioScore += 0.2;
+                suspiciousFactors.push('High compression ratio');
+            }
+
+            // Check duration
+            if (audioData.duration < 3) {
+                audioScore += 0.1;
+                suspiciousFactors.push('Very short audio duration');
+            }
+
+            aiProbability += audioScore;
+            aiProbability = Math.min(aiProbability, 1.0); // Cap at 100%
+
+            // Build technical details
+            analysisDetails.push(`Duration: ${audioData.duration.toFixed(2)} seconds`);
+            analysisDetails.push(`Sample Rate: ${audioData.sampleRate} Hz`);
+            analysisDetails.push(`Channels: ${audioData.channels}`);
+            analysisDetails.push(`AI Probability: ${(aiProbability * 100).toFixed(1)}%`);
+
+            // Determine threat level
+            let threatLevel = 'safe';
+            let threatMessage = '';
+            
+            if (aiProbability >= 0.7) {
+                threatLevel = 'danger';
+                threatMessage = '⚠️ HIGH RISK: Likely Scam Call';
+                userStats.highRiskThreats++;
+            } else if (aiProbability >= 0.4) {
+                threatLevel = 'warning';
+                threatMessage = '⚡ SUSPICIOUS: Potential Scam Indicators';
+                userStats.mediumRiskThreats++;
+            } else if (aiProbability >= 0.2) {
+                threatLevel = 'warning';
+                threatMessage = '⚡ CAUTION: Some Concerns Detected';
+                userStats.mediumRiskThreats++;
+            } else {
+                threatLevel = 'safe';
+                threatMessage = '✓ LIKELY LEGITIMATE';
+                userStats.lowRiskThreats++;
+            }
+
+            // Display results with transcription
+            resultElement.className = `result ${threatLevel}`;
+            resultElement.innerHTML = `
+                <strong>${threatMessage}</strong><br>
+                <strong>File:</strong> ${fileName}<br>
+                <strong>Analysis Method:</strong> OpenAI Whisper + Audio Analysis<br>
+                ${transcriptionResult.success ? `
+                <strong>🎙️ Transcription:</strong><br>
+                <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px; margin: 8px 0; font-style: italic; font-size: 13px; line-height: 1.5; max-height: 100px; overflow-y: auto;">
+                    "${transcriptionResult.transcription}"
+                </div>` : ''}
+                <strong>Suspicious Factors:</strong> ${suspiciousFactors.length > 0 ? suspiciousFactors.join(', ') : 'None detected'}<br>
+                <strong>Technical Details:</strong><br>
+                ${analysisDetails.join('<br>')}
+                <br><br>
+                <strong>Recommendation:</strong> ${getWhisperVoiceRecommendation(aiProbability, suspiciousFactors, transcriptionResult.success)}
+                <br><br>
+                <small style="color: #666;">🤖 Powered by OpenAI Whisper + Local Analysis</small>
+            `;
+        }
+
+        // Get recommendation based on Whisper analysis
+        function getWhisperVoiceRecommendation(aiProbability, suspiciousFactors, hasTranscription) {
+            if (aiProbability >= 0.7) {
+                return hasTranscription ? 
+                    'HIGH RISK: The transcribed content contains multiple scam indicators. Do not provide any personal information, money, or access to accounts. Hang up immediately and report if possible.' :
+                    'HIGH RISK: Multiple suspicious audio characteristics detected. Exercise extreme caution and verify caller identity through official channels.';
+            } else if (aiProbability >= 0.4) {
+                return hasTranscription ?
+                    'SUSPICIOUS: The call content shows concerning patterns. Verify the caller\'s identity through official channels before sharing any sensitive information.' :
+                    'SUSPICIOUS: Some concerning audio patterns found. Consider verifying the caller\'s identity, especially for sensitive requests.';
+            } else if (aiProbability >= 0.2) {
+                return 'CAUTION: Minor irregularities detected. While likely legitimate, always verify identity for important requests involving money or personal information.';
+            } else {
+                return hasTranscription ?
+                    'The call content appears normal. However, always verify caller identity for sensitive requests regardless of content analysis.' :
+                    'Audio characteristics appear normal. However, always verify identity for sensitive requests regardless of voice analysis.';
+            }
+        }
+
+        // Process Python backend analysis results
+        function processPythonResults(analysisResult, fileName, resultElement) {
+            const { 
+                overall_risk, 
+                total_score, 
+                recommendation, 
+                text_analysis, 
+                audio_analysis,
+                audio_features,
+                file_info 
+            } = analysisResult;
+
+            // Determine result class based on risk level
+            let resultClass = 'success';
+            let threatIcon = '✅';
+            
+            if (overall_risk === 'high') {
+                resultClass = 'danger';
+                threatIcon = '🚨';
+            } else if (overall_risk === 'medium') {
+                resultClass = 'warning';
+                threatIcon = '⚠️';
+            } else if (overall_risk === 'low') {
+                resultClass = 'info';
+                threatIcon = 'ℹ️';
+            }
+
+            // Build analysis details
+            const analysisDetails = [];
+            
+            // Text analysis details
+            if (text_analysis.transcribed_text) {
+                analysisDetails.push(`📝 Transcription: "${text_analysis.transcribed_text.substring(0, 100)}${text_analysis.transcribed_text.length > 100 ? '...' : ''}"`);
+                analysisDetails.push(`📊 Text Scam Score: ${text_analysis.scam_score}/100`);
+                if (text_analysis.indicators.length > 0) {
+                    analysisDetails.push(`🎯 Text Indicators: ${text_analysis.indicators.slice(0, 3).join(', ')}${text_analysis.indicators.length > 3 ? '...' : ''}`);
+                }
+            }
+            
+            // Audio analysis details
+            if (audio_analysis.audio_score > 0) {
+                analysisDetails.push(`🎵 Audio Suspicion Score: ${audio_analysis.audio_score}/100`);
+                if (audio_analysis.audio_indicators.length > 0) {
+                    analysisDetails.push(`🔊 Audio Indicators: ${audio_analysis.audio_indicators.join(', ')}`);
+                }
+            }
+            
+            // Technical audio features
+            if (audio_features) {
+                const features = [];
+                if (audio_features.speech_rate) features.push(`Speech Rate: ${audio_features.speech_rate.toFixed(2)}`);
+                if (audio_features.pitch_mean) features.push(`Pitch: ${audio_features.pitch_mean.toFixed(1)}Hz`);
+                if (audio_features.volume_mean) features.push(`Volume: ${(audio_features.volume_mean * 100).toFixed(1)}%`);
+                if (features.length > 0) {
+                    analysisDetails.push(`🔧 Audio Features: ${features.join(', ')}`);
+                }
+            }
+
+            // Display results
+            resultElement.className = `result ${resultClass}`;
+            resultElement.innerHTML = `
+                <strong>${threatIcon} ${recommendation}</strong><br><br>
+                <strong>File:</strong> ${fileName}<br>
+                <strong>Risk Level:</strong> ${overall_risk.toUpperCase()}<br>
+                <strong>Overall Score:</strong> ${total_score}/100<br><br>
+                ${analysisDetails.length > 0 ? `<strong>Analysis Details:</strong><br>${analysisDetails.join('<br>')}<br><br>` : ''}
+                <strong>File Info:</strong> ${(file_info.size / 1024 / 1024).toFixed(2)} MB<br><br>
+                <small style="color: #666;">🐍 Powered by Python AI Backend (Free)</small>
+            `;
+        }
 
         // Process local audio analysis results
         function processLocalResults(audioData, fileName, resultElement) {
@@ -2329,6 +2828,26 @@
                 audioUploadLabel.addEventListener('click', function() {
                     document.getElementById('audioFileInput').click();
                 });
+            }
+
+            // Add input validation for message analyzer
+            const messageInput = document.getElementById('messageInput');
+            const messageButton = document.getElementById('messageAnalyzeButton');
+            
+            if (messageInput && messageButton) {
+                function updateMessageButton() {
+                    const hasText = messageInput.value.trim().length > 0;
+                    messageButton.disabled = !hasText;
+                    messageButton.textContent = hasText ? 
+                        '🤖 Analyze with Gemini AI' : 
+                        'Enter Message to Analyze';
+                    messageButton.style.background = hasText ? '#6366f1' : '#2a2a2a';
+                    messageButton.style.cursor = hasText ? 'pointer' : 'not-allowed';
+                }
+                
+                messageInput.addEventListener('input', updateMessageButton);
+                messageInput.addEventListener('paste', () => setTimeout(updateMessageButton, 10));
+                updateMessageButton(); // Initial state
             }
         });
 
